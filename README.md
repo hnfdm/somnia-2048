@@ -6,4 +6,4 @@
 
 #### Reference
 
-- Offical 2048 by [Gabriele Cirulli](https://github.com/gabrielecirulli/2048)
+- Official 2048 by [Gabriele Cirulli](https://github.com/gabrielecirulli/2048)
