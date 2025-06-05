@@ -533,6 +533,122 @@ hr {
 .game-explanation {
   margin-top: 50px; }
 
+.wallet-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.wallet-button.disconnected {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.wallet-button.connected {
+  background-color: #f44336;
+  color: white;
+}
+
+.wallet-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.wallet-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+#wallet-address {
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.leaderboard {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.leaderboard h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.leaderboard table {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.leaderboard th, .leaderboard td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.leaderboard th {
+  background-color: #f4f4f4;
+}
+
+#refresh-leaderboard {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+#refresh-leaderboard:hover {
+  opacity: 0.9;
+}
+
+.scores-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.score-container, .best-container {
+  display: inline-block;
+  padding: 10px;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  font-size: 18px;
+  color: #333;
+  min-width: 80px;
+  text-align: center;
+}
+
+#wallet-prompt {
+  text-align: center;
+}
+#wallet-prompt p {
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+#wallet-prompt button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+#connect-now {
+  background-color: #4CAF50;
+  color: white;
+}
+#cancel-prompt {
+  background-color: #f44336;
+  color: white;
+}
+#connect-now:hover, #cancel-prompt:hover {
+  opacity: 0.9;
+}
+
 @media screen and (max-width: 520px) {
   html, body {
     font-size: 15px; }

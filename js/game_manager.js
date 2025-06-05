@@ -75,27 +75,30 @@ GameManager.prototype.addRandomTile = function () {
   }
 };
 
-// Sends the updated grid to the actuator
 GameManager.prototype.actuate = function () {
-  if (this.storageManager.getBestScore() < this.score) {
-    this.storageManager.setBestScore(this.score);
+  // Get blockchain best score
+  let blockchainBestScore = parseInt(window.getBlockchainBestScore ? window.getBlockchainBestScore() : "0");
+
+  // Track the highest score during gameplay
+  if (this.score > this.bestScore) {
+    this.bestScore = this.score;
+    console.log("New in-game high score:", this.score, "Blockchain best score:", blockchainBestScore); // Debug log
   }
 
-  // Clear the state when the game is over (game over only, not win)
-  if (this.over) {
-    this.storageManager.clearGameState();
-  } else {
-    this.storageManager.setGameState(this.serialize());
+  // Trigger blockchain update only when game ends
+  if (this.over && this.score > blockchainBestScore && window.updateHighScore) {
+    console.log("Game over, submitting high score to blockchain:", this.score); // Debug log
+    window.updateHighScore(this.score);
   }
 
+  // Update the actuator
   this.actuator.actuate(this.grid, {
     score:      this.score,
     over:       this.over,
     won:        this.won,
-    bestScore:  this.storageManager.getBestScore(),
+    bestScore:  Math.max(this.bestScore, blockchainBestScore), // Show in-game high score or blockchain score
     terminated: this.isGameTerminated()
   });
-
 };
 
 // Represent the current game as an object

@@ -11,7 +11,6 @@
   <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
@@ -21,14 +20,33 @@
     <div class="heading">
       <h1 class="title">2048</h1>
       <div class="scores-container">
-        <div class="score-container">0</div>
-        <div class="best-container">0</div>
+        <div class="score-container" id="score-container">0</div>
+        <div class="best-container" id="best-container">0</div>
       </div>
     </div>
 
     <div class="above-game">
       <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
       <a class="restart-button">New Game</a>
+      <!-- Wallet Connect -->
+      <a id="connect-wallet" class="wallet-button disconnected">Connect Wallet</a>
+      <p id="wallet-address">No wallet connected</p>
+    </div>    
+
+     <!-- Leaderboard -->
+    <div class="leaderboard">
+      <h2>Leaderboard</h2>
+      <table id="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+      <button id="refresh-leaderboard">Refresh Leaderboard</button>
     </div>
 
     <div class="game-container">
@@ -83,10 +101,17 @@
     <p>
     Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
     </p>
+    <!-- Custom Wallet Prompt Modal -->
+    <div id="wallet-prompt" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:5px; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:1000;">
+      <p>Please connect your wallet to update your high score.</p>
+      <button id="connect-now">Connect Wallet</button>
+      <button id="cancel-prompt">Cancel</button>
+    </div>
   </div>
 
   <script src="js/bind_polyfill.js"></script>
   <script src="js/classlist_polyfill.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
   <script src="js/animframe_polyfill.js"></script>
   <script src="js/keyboard_input_manager.js"></script>
   <script src="js/html_actuator.js"></script>
@@ -95,5 +120,6 @@
   <script src="js/local_storage_manager.js"></script>
   <script src="js/game_manager.js"></script>
   <script src="js/application.js"></script>
+  <script src="js/blockchain.js"></script>
 </body>
 </html>
