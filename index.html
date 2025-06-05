@@ -18,7 +18,7 @@
 <body>
   <div class="container">
     <div class="heading">
-      <h1 class="title">Somnia 2048</h1>
+      <h1 class="title">2048</h1>
       <div class="scores-container">
         <div class="score-container" id="score-container">0</div>
         <div class="best-container" id="best-container">0</div>
@@ -30,8 +30,8 @@
     </div>
 
     <div class="above-game">
-      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-      <a class="restart-button">New Game</a>
+      <p class="game-intro">Merge the dreaming numbers <strong>before you wake.</strong></p>
+      <a class="restart-button">Start</a>
     </div>
     
     <!-- Leaderboard -->
@@ -47,7 +47,7 @@
         </thead>
         <tbody id="leaderboard-body"></tbody>
       </table>
-      <button id="refresh-leaderboard">Refresh Leaderboard</button>
+      <button id="refresh-leaderboard">Refresh</button>
     </div>
 
     <div class="game-container">
@@ -90,20 +90,21 @@
     </div>
     
     <p class="game-explanation">
-      <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same number touch, they <strong>merge into one!</strong>
+      <strong class="important">How to play?</strong> Use your <strong>arrow keys</strong> to move the tiles, when two tiles with the same number touch, they <strong>merge into one!</strong>
     </p>
     <hr>
-    <p>
+    <!--<p>
     <strong class="important">Note:</strong> This site is the official version of 2048. You can play it on your phone via <a href="http://git.io/2048">http://git.io/2048.</a> All other apps or sites are derivatives or fakes, and should be used with caution.
     </p>
     <hr>
+    -->
     <p>
-    Created by <a href="https://x.com/Autosultan_team" target="_blank">Airdrop ASC</a> & Inspired by <a href="https://x.com/0xHaileyy" target="_blank">Haileyy</a>
+    Created by <a href="https://x.com/Autosultan_team" target="_blank"><strong>Airdrop ASC</strong></a>
     </p>
 
     <!-- Custom Wallet Prompt Modal -->
     <div id="wallet-prompt" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:white; padding:20px; border-radius:5px; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:1000;">
-      <p>Please connect your wallet to update your high score.</p>
+      <p>Please connect your wallet to update your high score</p>
       <button id="connect-now">Connect Wallet</button>
       <button id="cancel-prompt">Cancel</button>
     </div>
