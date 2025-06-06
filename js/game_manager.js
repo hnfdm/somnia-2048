@@ -75,30 +75,83 @@ GameManager.prototype.addRandomTile = function () {
   }
 };
 
+GameManager.prototype.startNewGame = async function () {
+    // Reset game state
+    this.score = 0;
+    this.over = false;
+    this.won = false;
+    this.keepPlaying = false;
+    this.bestScore = 0;
+    this.grid = new Grid(this.size);
+    this.addStartTiles();
+
+    // Check and prompt for entry fee at the start of each game
+    if (window.checkEntryFeeStatus) {
+        const feePaid = await window.checkEntryFeeStatus();
+        if (!feePaid) {
+            alert("You must pay the entry fee (0.01 STT) to start a new game.");
+            return; // Block game start until fee is paid
+        }
+    } else {
+        console.error("checkEntryFeeStatus function not available");
+        alert("Cannot start game: Blockchain integration error.");
+        return;
+    }
+
+    // Actuate to render the new game state
+    this.actuate();
+};
+
+// Override restart method to include entry fee check
+GameManager.prototype.restart = async function () {
+    await this.startNewGame();
+};
+
+// Override continueGame to include entry fee check after winning
+GameManager.prototype.continueGame = async function () {
+    this.keepPlaying = true;
+    this.won = false;
+
+    // Check and prompt for entry fee when continuing after winning
+    if (window.checkEntryFeeStatus) {
+        const feePaid = await window.checkEntryFeeStatus();
+        if (!feePaid) {
+            alert("You must pay the entry fee (0.01 STT) to continue playing.");
+            return; // Block continuation until fee is paid
+        }
+    } else {
+        console.error("checkEntryFeeStatus function not available");
+        alert("Cannot continue game: Blockchain integration error.");
+        return;
+    }
+
+    this.actuate();
+};
+
 GameManager.prototype.actuate = function () {
-  // Get blockchain best score
-  let blockchainBestScore = parseInt(window.getBlockchainBestScore ? window.getBlockchainBestScore() : "0");
+    // Use blockchain best score instead of local storage
+    let blockchainBestScore = parseInt(window.getBlockchainBestScore ? window.getBlockchainBestScore() : "0");
 
-  // Track the highest score during gameplay
-  if (this.score > this.bestScore) {
-    this.bestScore = this.score;
-    console.log("New in-game high score:", this.score, "Blockchain best score:", blockchainBestScore); // Debug log
-  }
+    // Track the highest score during gameplay
+    if (this.score > this.bestScore) {
+        this.bestScore = this.score;
+        console.log("New in-game high score:", this.score, "Blockchain best score:", blockchainBestScore); // Debug log
+    }
 
-  // Trigger blockchain update only when game ends
-  if (this.over && this.score > blockchainBestScore && window.updateHighScore) {
-    console.log("Game over, submitting high score to blockchain:", this.score); // Debug log
-    window.updateHighScore(this.score);
-  }
+    // Trigger blockchain update only when game ends
+    if (this.over && window.updateHighScore) {
+        console.log("Game over, submitting score to blockchain:", this.score); // Debug log
+        window.updateHighScore(this.score);
+    }
 
-  // Update the actuator
-  this.actuator.actuate(this.grid, {
-    score:      this.score,
-    over:       this.over,
-    won:        this.won,
-    bestScore:  Math.max(this.bestScore, blockchainBestScore), // Show in-game high score or blockchain score
-    terminated: this.isGameTerminated()
-  });
+    // Update the actuator
+    this.actuator.actuate(this.grid, {
+        score:      this.score,
+        over:       this.over,
+        won:        this.won,
+        bestScore:  Math.max(this.bestScore, blockchainBestScore), // Show in-game high score or blockchain score
+        terminated: this.isGameTerminated()
+    });
 };
 
 // Represent the current game as an object
