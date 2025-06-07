@@ -304,11 +304,25 @@ const contractABI = [
 let blockchainBestScore = "0"; // Track contract's high score
 let hasPaidEntryFee = false; // Track if user has paid entry fee for the current game
 
-// Initialize Web3
+// Somnia Testnet network configuration
+const somniaTestnet = {
+    chainId: "0xc488", // Hexadecimal Chain ID for Somnia Testnet (50312)
+    chainName: "Somnia Testnet",
+    rpcUrls: ["https://dream-rpc.somnia.network"],
+    nativeCurrency: {
+        name: "STT",
+        symbol: "STT",
+        decimals: 18
+    },
+    blockExplorerUrls: ["https://shannon-explorer.somnia.network"]
+};
+
+// Initialize Web3 and switch to Somnia Testnet
 async function initWeb3() {
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
         try {
+            // Request account access
             await window.ethereum.request({ method: "eth_requestAccounts" });
             const accounts = await web3.eth.getAccounts();
             if (!accounts.length) {
@@ -319,6 +333,10 @@ async function initWeb3() {
             if (walletAddressElement) {
                 walletAddressElement.innerText = `Connected: ${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
             }
+
+            // Add and switch to Somnia Testnet
+            await addAndSwitchNetwork();
+
             contract = new web3.eth.Contract(contractABI, contractAddress);
             const walletButton = document.getElementById("connect-wallet");
             if (walletButton) {
@@ -331,11 +349,43 @@ async function initWeb3() {
             await loadHighScore();
             await loadLeaderboard();
         } catch (error) {
-            console.error("Wallet connection error:", error.message, error.stack);
-            alert("Failed to connect wallet. Ensure MetaMask is installed, set to Somnia Testnet (Chain ID: 0xc488), and unlocked.");
+            console.error("Web3 initialization error:", error.message, error.stack);
+            alert("Failed to initialize Web3. Ensure MetaMask is installed and try again. Error: " + error.message);
         }
     } else {
         alert("Please install MetaMask!");
+    }
+}
+
+// Add and switch to Somnia Testnet network
+async function addAndSwitchNetwork() {
+    try {
+        // Check the current network chain ID
+        const chainId = await web3.eth.getChainId();
+        if (chainId !== parseInt(somniaTestnet.chainId, 16)) {
+            try {
+                // Attempt to switch to Somnia Testnet
+                await window.ethereum.request({
+                    method: "wallet_switchEthereumChain",
+                    params: [{ chainId: somniaTestnet.chainId }]
+                });
+                console.log("Switched to Somnia Testnet");
+            } catch (switchError) {
+                // If switching fails (network not added), add it
+                if (switchError.code === 4902) {
+                    await window.ethereum.request({
+                        method: "wallet_addEthereumChain",
+                        params: [somniaTestnet]
+                    });
+                    console.log("Added and switched to Somnia Testnet");
+                } else {
+                    throw switchError;
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Network switch error:", error.message, error.stack);
+        alert("Failed to switch to Somnia Testnet. Please switch manually to Chain ID 0xc488 in MetaMask and try again. Error: " + error.message);
     }
 }
 
@@ -593,7 +643,6 @@ async function submitScore(score) {
         console.log("Score updated on blockchain:", score);
         await loadHighScore();
         await loadLeaderboard();
-        hasPaidEntryFee = false; // Reset fee status locally after game ends
         if (parseInt(score) > parseInt(currentHighScore)) {
             alert("New high score updated successfully! Your entry fee of 0.01 STT has been refunded. You will need to pay the entry fee again to start a new game.");
         } else {
@@ -602,7 +651,6 @@ async function submitScore(score) {
     } catch (error) {
         console.error("Error updating score:", error.message, error.stack);
         alert("Failed to update score. Ensure you have paid the entry fee and have enough STT tokens. Error: " + error.message);
-        hasPaidEntryFee = false; // Reset fee status on failure
     } finally {
         const walletButton = document.getElementById("connect-wallet");
         if (walletButton) {
