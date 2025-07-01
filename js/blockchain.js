@@ -447,37 +447,52 @@ async function loadHighScore() {
 
 // Load leaderboard
 async function loadLeaderboard() {
-    const leaderboardBody = document.getElementById("leaderboard-body");
-    if (!leaderboardBody) {
-        console.error("leaderboard-body element not found in DOM");
-        return;
-    }
-    if (contract) {
-        try {
-            const leaderboard = await contract.methods.getLeaderboard().call();
-            console.log("Leaderboard data:", JSON.stringify(leaderboard, null, 2));
-            leaderboardBody.innerHTML = "";
-            if (leaderboard && Array.isArray(leaderboard) && leaderboard.length > 0) {
-                leaderboard.forEach((entry, index) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${entry.player.slice(0, 6)}...${entry.player.slice(-4)}</td>
-                        <td>${entry.score}</td>
-                    `;
-                    leaderboardBody.appendChild(row);
-                });
-            } else {
-                leaderboardBody.innerHTML = "<tr><td colspan='3'>No scores yet</td></tr>";
+  const leaderboardBody = document.getElementById("leaderboard-body");
+  if (!leaderboardBody) return;
+
+  if (contract) {
+    try {
+      const leaderboard = await contract.methods.getLeaderboard().call();
+      leaderboardBody.innerHTML = "";
+
+      if (leaderboard.length > 0) {
+        // Create rows first with temporary address display
+        leaderboard.forEach((entry, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td class="somnia-name" data-address="${entry.player}">
+              ${entry.player.slice(0, 6)}...${entry.player.slice(-4)}
+            </td>
+            <td>${entry.score}</td>
+          `;
+          leaderboardBody.appendChild(row);
+        });
+
+        // Now resolve names asynchronously and update
+        const nameElements = leaderboardBody.querySelectorAll(".somnia-name");
+        nameElements.forEach(async (el) => {
+          const address = el.getAttribute("data-address");
+          try {
+            const name = await getPrimarySomName(address);
+            if (name) {
+              el.textContent = name;
+              el.classList.add("som-name"); // Optional: add class for styling
             }
-        } catch (error) {
-            console.error("Error loading leaderboard:", error.message, error.stack);
-            leaderboardBody.innerHTML = "<tr><td colspan='3'>Failed to load leaderboard: " + error.message + "</td></tr>";
-        }
-    } else {
-        console.warn("Cannot load leaderboard: No contract instance");
-        leaderboardBody.innerHTML = "<tr><td colspan='3'>Connect wallet to view leaderboard</td></tr>";
+          } catch (error) {
+            console.error(`Failed to resolve name for ${address}:`, error);
+          }
+        });
+      } else {
+        leaderboardBody.innerHTML = "<tr><td colspan='3'>No scores yet</td></tr>";
+      }
+    } catch (error) {
+      console.error("Error loading leaderboard:", error);
+      leaderboardBody.innerHTML = `<tr><td colspan='3'>Error: ${error.message}</td></tr>`;
     }
+  } else {
+    leaderboardBody.innerHTML = "<tr><td colspan='3'>Connect wallet to view leaderboard</td></tr>";
+  }
 }
 
 // Check if user has paid the entry fee
