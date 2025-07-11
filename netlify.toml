@@ -1,3 +1,7 @@
+[build]
+  command = "" # Kosongkan jika tidak ada build command
+  publish = "." # Direktori yang berisi index.html (biasanya root)
+
 [[headers]]
  for = "/*.js"
  [headers.values]
