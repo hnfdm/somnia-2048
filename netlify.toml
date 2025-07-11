@@ -22,6 +22,3 @@
  for = "/*"
  [headers.values]
  Content-Encoding = "gzip"
-
-[[plugins]]
-  package = "netlify-plugin-minify-html"
